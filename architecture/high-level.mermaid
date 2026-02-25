@@ -1,0 +1,93 @@
+%% Enterprise MCP Server Architecture — High-Level System Design
+
+graph TB
+    subgraph AI_Agents["AI Agents"]
+        A1["Desktop Agent<br/>(stdio transport)"]
+        A2["Cloud Agent<br/>(HTTP transport)"]
+        A3["Legacy Agent<br/>(SSE transport)"]
+    end
+
+    subgraph MCP_Layer["MCP Protocol Layer"]
+        direction TB
+        MCP_STDIO["Stdio Transport"]
+        MCP_HTTP["Streamable HTTP Transport<br/>(Session-based, Resumable)"]
+        MCP_SSE["SSE Transport"]
+    end
+
+    subgraph Server_Framework["MCP Server Framework"]
+        direction TB
+        AUTH_MW["Authentication Middleware<br/>(API Key / JWT)"]
+        TOOL_REG["Tool Registry<br/>(ListTools / CallTool)"]
+        RES_REG["Resource Registry<br/>(ListResources / ReadResource)"]
+        PROMPT_REG["Prompt Registry<br/>(ListPrompts / GetPrompt)"]
+        SESSION["Session Manager<br/>(In-Memory Event Store)"]
+        HEALTH["Health Check Endpoint"]
+    end
+
+    subgraph Platform_Integrations["Platform Integrations (10+)"]
+        direction TB
+        EHR_INT["EHR Integration<br/>(FHIR R4 + STU3)"]
+        ITSM_INT["ITSM Integration<br/>(Table API / REST)"]
+        CRM_INT["CRM Integration<br/>(MCP Proxy)"]
+        TRIAGE_INT["Clinical Triage<br/>(NLP + Conversation)"]
+        PHARMA_INT["Pharmacy & Drug DB<br/>(REST + Caching)"]
+        RETAIL_INT["Retail / Insurance<br/>(CRUD Operations)"]
+        LAB_INT["Lab Pod Management<br/>(Multi-Collection)"]
+        RESEARCH_INT["Medical Research<br/>(Literature / Trials / Drug DB)"]
+    end
+
+    subgraph Enterprise_APIs["Enterprise APIs & Services"]
+        EHR_API["EHR Platform API<br/>(OAuth2 + FHIR)"]
+        ITSM_API["ITSM Platform API<br/>(Basic / OAuth / Key)"]
+        CRM_API["CRM Platform<br/>(Hosted MCP Server)"]
+        TRIAGE_API["Triage Engine API<br/>(API Key Auth)"]
+        DRUG_API["Drug Database API<br/>(Public REST)"]
+        GW_API["API Gateway<br/>(Token Broker)"]
+        CUSTOM_API["Custom REST APIs<br/>(API Key / JWT)"]
+    end
+
+    A1 --> MCP_STDIO
+    A2 --> MCP_HTTP
+    A3 --> MCP_SSE
+
+    MCP_STDIO --> AUTH_MW
+    MCP_HTTP --> AUTH_MW
+    MCP_SSE --> AUTH_MW
+
+    AUTH_MW --> TOOL_REG
+    AUTH_MW --> RES_REG
+    AUTH_MW --> PROMPT_REG
+    MCP_HTTP --> SESSION
+    AUTH_MW --> HEALTH
+
+    TOOL_REG --> EHR_INT
+    TOOL_REG --> ITSM_INT
+    TOOL_REG --> CRM_INT
+    TOOL_REG --> TRIAGE_INT
+    TOOL_REG --> PHARMA_INT
+    TOOL_REG --> RETAIL_INT
+    TOOL_REG --> LAB_INT
+    TOOL_REG --> RESEARCH_INT
+
+    EHR_INT --> EHR_API
+    EHR_INT --> GW_API
+    ITSM_INT --> ITSM_API
+    CRM_INT --> CRM_API
+    CRM_INT --> GW_API
+    TRIAGE_INT --> TRIAGE_API
+    PHARMA_INT --> DRUG_API
+    RETAIL_INT --> CUSTOM_API
+    LAB_INT --> CUSTOM_API
+    RESEARCH_INT --> DRUG_API
+
+    classDef agent fill:#4A90D9,stroke:#2C5F8A,color:#fff
+    classDef transport fill:#7B68EE,stroke:#5B4BC7,color:#fff
+    classDef framework fill:#2ECC71,stroke:#27AE60,color:#fff
+    classDef integration fill:#F39C12,stroke:#E67E22,color:#fff
+    classDef api fill:#E74C3C,stroke:#C0392B,color:#fff
+
+    class A1,A2,A3 agent
+    class MCP_STDIO,MCP_HTTP,MCP_SSE transport
+    class AUTH_MW,TOOL_REG,RES_REG,PROMPT_REG,SESSION,HEALTH framework
+    class EHR_INT,ITSM_INT,CRM_INT,TRIAGE_INT,PHARMA_INT,RETAIL_INT,LAB_INT,RESEARCH_INT integration
+    class EHR_API,ITSM_API,CRM_API,TRIAGE_API,DRUG_API,GW_API,CUSTOM_API api
