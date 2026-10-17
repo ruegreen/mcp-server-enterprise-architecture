@@ -70,7 +70,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-2
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to Container Registry
         uses: aws-actions/amazon-ecr-login@v2
@@ -149,7 +149,7 @@ Container task configuration for serverless container deployment:
         "logDriver": "awslogs",
         "options": {
           "awslogs-group": "/ecs/mcp-server",
-          "awslogs-region": "us-east-2",
+          "awslogs-region": "<region>",
           "awslogs-stream-prefix": "ecs"
         }
       }

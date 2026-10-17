@@ -118,7 +118,7 @@ Across all servers, environment variables follow a consistent naming convention:
 | Gateway | `GATEWAY_BASE_URL`, `GATEWAY_TOKEN_PASSPHRASE` | Token broker config |
 | Server | `SERVER_PORT`, `SERVER_PATH` | `3010`, `/mcp-server` |
 | MCP Auth | `MCP_API_KEY` | Client-to-server auth key |
-| Cloud | `AWS_REGION`, `AWS_SECRET_NAME` | `us-east-2`, `mcp/prod/config` |
+| Cloud | `AWS_REGION`, `AWS_SECRET_NAME` | `<region>`, `<secret-name>` |
 
 ---
 
